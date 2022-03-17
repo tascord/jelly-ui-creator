@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client UI Designer</title>
+
+    <script src="index.js" defer></script>
+    <script src="designer.js" defer></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;1,400&display=swap');
+
+        * {
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            min-width: 100vw;
+            max-height: 100vh;
+
+            margin: 0;
+            padding: 0;
+            background: '#fafafa';
+            display: flex;
+            overflow: none;
+        }
+
+        canvas {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        nav {
+            display: none;
+            padding-left: 2rem;
+            position: absolute;
+
+            top: 0;
+            right: 0;
+
+            width: 25rem;
+            height: 100vh;
+            background: #25252599;
+        }
+
+        nav.closed {
+            right: -25rem;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <img src="background.png">
+
+    <canvas></canvas>
+    <nav>
+
+        <header>
+            <h1>Ui Designer</h1>
+            <button>Export to .java</button>
+        </header>
+
+        <ul id="structure"></ul>
+
+    </nav>
+
+</body>
+
+</html>
