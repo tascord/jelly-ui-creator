@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colour List</title>
+
+    <script src="colours.js"></script>
+    <link rel="stylesheet" href="colours.css">
+
+</head>
+
+<body>
+
+    <main>
+    </main>
+
+    <script>
+
+        const main = document.querySelector('main');
+        Object.keys(Colours).forEach(colour => {
+
+            const container = document.createElement('div');
+            container.classList.add('container');
+            main.appendChild(container);
+
+            const header = document.createElement('h2');
+            header.classList.add('header');
+            header.innerText = colour;
+            container.appendChild(header);
+
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('wrapper');
+            container.appendChild(wrapper);
+
+            let i = 0;
+            Object.keys(Colours[colour]).forEach(vibrancy => {
+
+                const colour_container = document.createElement('div');
+                colour_container.classList.add('colour');
+                colour_container.style.backgroundColor = Colours[colour][vibrancy];
+
+                const number = document.createElement('span');
+                number.classList.add('vibrancy');
+                number.innerText = vibrancy;
+                number.style.color = Colours[colour][Object.keys(Colours[colour])[Object.keys(Colours[colour]).length - i++ - 1]]
+                colour_container.appendChild(number);
+
+                colour_container.onclick = () => {
+
+                    // Copy to clipboard
+                    const el = document.createElement('input');
+                    el.value = `${colour}.${vibrancy}.100`;
+                    document.body.appendChild(el);
+                    el.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(el);
+
+                    number.innerText = '<#>';
+                    setTimeout(() => {
+                        number.innerText = vibrancy;
+                    }, 500);
+
+                }
+
+                wrapper.appendChild(colour_container);
+
+            });
+
+        })
+
+    </script>
+
+
+</body>
+
+</html>

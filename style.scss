@@ -1,0 +1,121 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;1,400&display=swap");
+
+* {
+    font-family: "Nunito", sans-serif;
+}
+
+body {
+    min-width: 100vw;
+    max-height: 100vh;
+
+    margin: 0;
+    padding: 0;
+    background: #fafafa;
+    display: flex;
+    overflow-x: hidden;
+}
+
+canvas {
+    width: 100vw;
+    height: 100vh;
+}
+
+nav {
+    padding: 0 2rem;
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 25rem;
+    height: 100vh;
+    background: #25252599;
+
+    color: #83fff9;
+
+    &.closed {
+        right: -30rem;
+    }
+
+    header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        background: #00000050;
+        margin: 0 -2rem;
+        padding: 0 2rem;
+    }
+
+    #items {
+        max-height: 35vh;
+        list-style: none;
+        margin-top: 0;
+        padding-left: 1rem;
+        li {
+            cursor: pointer;
+            color: white;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+
+    footer {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+
+        span {
+            font-weight: bolder;
+            color: #83b5ff;
+        }
+
+        div {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+
+            label {
+                width: 8rem;
+            }
+
+            :not(label) {
+                flex: 1;
+            }
+        }
+    }
+    
+    #creator {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        
+        select {
+            flex: 1;
+        }
+
+        button {
+            margin-left: 0.5rem;
+        }
+    }
+
+}
+
+.button {
+    position: absolute;
+    top: 1rem;
+    right: 30rem;
+
+    &.closed {
+        right: 0.75rem;
+        transform: rotate(180deg);
+    }
+}
