@@ -25,6 +25,8 @@ nav {
   position: absolute;
   top: 0;
   right: 0;
+  -webkit-transition: right 250ms ease-in-out;
+  transition: right 250ms ease-in-out;
   width: 25rem;
   height: 100vh;
   background: #25252599;
@@ -158,6 +160,10 @@ nav #creator button {
   position: absolute;
   top: 1rem;
   right: 30rem;
+  -webkit-transition: right 250ms ease-in-out, -webkit-transform 250ms ease-in-out;
+  transition: right 250ms ease-in-out, -webkit-transform 250ms ease-in-out;
+  transition: right 250ms ease-in-out, transform 250ms ease-in-out;
+  transition: right 250ms ease-in-out, transform 250ms ease-in-out, -webkit-transform 250ms ease-in-out;
 }
 
 .button.closed {

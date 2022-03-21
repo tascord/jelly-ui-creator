@@ -18,6 +18,7 @@ const c = document.getElementById('colour');
 const t = document.getElementById('text');
 const x = document.getElementById('x');
 const y = document.getElementById('y');
+const r = document.getElementById('rounded');
 
 const s = document.getElementById('selected');
 const i = document.getElementById('items');
@@ -41,6 +42,7 @@ function select(node) {
         a.disabled = true;
         c.disabled = true;
         t.disabled = true;
+        r.disabled = true;
         return;
     } else {
         wu.disabled = false;
@@ -52,6 +54,7 @@ function select(node) {
         p.disabled = false;
         a.disabled = false;
         c.disabled = false;
+        r.disabled = false;
         t.disabled = node.text === undefined;
     }
 
@@ -64,6 +67,7 @@ function select(node) {
     a.value = node.alignment?.toString() ?? '';
     x.value = node.x?.toString() ?? '';
     y.value = node.y?.toString() ?? '';
+    r.checked = node.rounded?.toString ?? '0';
 
     if(t.text) t.innerText = node.text;
 
@@ -167,6 +171,8 @@ t.onchange = (e) => selected.text = e.target.value;
 x.onchange = (e) => selected.x = parseFloat(e.target.value);
 y.onchange = (e) => selected.y = parseFloat(e.target.value);
 
+r.onchange = (e) => selected.radius = parseFloat(e.target.value);
+
 // Parent
 p.onchange = (e) => {
 
@@ -193,4 +199,3 @@ p.onchange = (e) => {
     }));
 
 }
-

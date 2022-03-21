@@ -1,6 +1,8 @@
 const C = document.querySelector('canvas'), X = C.getContext('2d');
 let MX = 0, MY = 0;
+
 let UNITS = 0;
+let UNIT_H = 0, UNIT_W = 0;
 
 const resize = () => {
     const { width, height } = C.getBoundingClientRect();
@@ -9,6 +11,8 @@ const resize = () => {
     C.height = height;
 
     UNITS = (width + height) / 2 / 100;
+    UNIT_H = height / 100;
+    UNIT_W = width / 100;
 
 }
 
@@ -74,8 +78,8 @@ function scaled({ unit_width, unit_height, min_width, min_height }) {
         min_width,
         min_height,
 
-        get_width: function () { return Math.max(this.unit_width * UNITS, this.min_width) },
-        get_height: function () { return Math.max(this.unit_height * UNITS, this.min_height) },
+        get_width: function () { return Math.max(this.unit_width * UNIT_W, this.min_width) },
+        get_height: function () { return Math.max(this.unit_height * UNIT_H, this.min_height) },
 
     }
 }
@@ -109,23 +113,28 @@ function alignment(type, x, y, scale, parent = { x: C.width / 2, y: C.height / 2
 }
 
 function export_data() {
+
+    const map = (node) => node.children.map(c => ({
+
+        name: c.name,
+        type: c.type,
+
+        x: c.x,
+        y: c.y,
+
+        width: [c.scale.unit_width, c.scale.min_width],
+        height: [c.scale.unit_height, c.scale.min_height],
+
+        colour: c.colour,
+        alignment: c.alignment,
+
+        children: map(c),
+
+    }))
+
     const data = JSON.stringify({
         root: {
-            children: Root.children.map(c => ({
-
-                name: c.name,
-                type: c.type,
-
-                x: c.x,
-                y: c.y,
-
-                width: [c.scale.unit_width, c.scale.min_width],
-                height: [c.scale.unit_height, c.scale.min_height],
-
-                colour: c.colour,
-                alignment: c.alignment,
-
-            }))
+            children: map(Root)
         }
     }, null, 4);
 
@@ -144,12 +153,8 @@ function import_data(data) {
 
     const parse = (children, parent) => children.map(c => {
 
-        console.log(`PARSE`, children, parent);
-
-        let type;
-
-        if (c.type === 'pane') type = Pane;
-        else throw new Error('Unknown type: ' + c.type);
+        let type = Parts[c.type[0].toUpperCase() + c.type.slice(1).toLowerCase()];
+        if (!type) throw new Error('Unknown type: ' + c.type);
 
         const [unit_width, min_width] = c.width;
         const [unit_height, min_height] = c.height;
@@ -192,118 +197,4 @@ const Context = {
         if (global !== type) (this.handlers[global] ?? []).forEach(h => h(data));
         (this.handlers[type] ?? []).forEach(h => h(data));
     }
-}
-
-/** --------------------------------- **/
-
-class Renderable {
-    constructor(parent) {
-        this.parent = parent;
-        this.children = [];
-    }
-
-    render_path() {
-        if (this !== Root) this.draw();
-        this.children.forEach(child => child.render_path());
-    }
-
-    add_child(pane) {
-        pane.parent = this;
-        this.children.push(pane);
-        return pane;
-    }
-
-    draw() { console.warn('Raw Renderable Call!') };
-    drawHud() { this.draw() };
-}
-
-class Pane extends Renderable {
-    constructor({ name, colour, x, y, scale, alignment, parent }) {
-        super(parent);
-        this.type = 'pane';
-
-        this.x = x ?? 0;
-        this.y = y ?? 0;
-
-        this.name = name;
-        this.colour = colour ?? 'navy.300.100';
-        this.scale = scale ?? scaled({ unit_width: 1, unit_height: 1, min_width: 1, min_height: 1 });
-        this.alignment = alignment ?? 'center-center';
-
-        Context.on(this.name + '.colour', (colour) => this.colour = colour);
-        Context.on(this.name + '.scale', (scale) => this.scale = scale);
-        Context.on(this.name + '.alignment', (alignment) => this.alignment = alignment);
-        Context.on(this.name + '.x', (x) => this.x = x);
-        Context.on(this.name + '.y', (y) => this.y = y);
-
-    }
-
-    calc_parent() {
-
-        if (!this.parent || this.parent === Root) return undefined;
-        const { x, y } = alignment(this.parent.alignment, this.parent.x, this.parent.y, this.parent.scale, this.parent.calc_parent());
-
-        return {
-            x: x + this.parent.scale.get_width() / 2,
-            y: y + this.parent.scale.get_height() / 2,
-            width: this.parent.scale.get_width(),
-            height: this.parent.scale.get_height(),
-        }
-    }
-
-    draw() {
-        const [colour, shade, transparency] = this.colour.split('.');
-
-        let position = alignment(this.alignment, this.x, this.y, this.scale, this.calc_parent());
-        let x = position.x, y = position.y;
-
-        X.fillStyle = Colours[colour][shade];
-        if (transparency) X.globalAlpha = transparency / 100;
-
-        X.fillRect(x, y, this.scale.get_width(), this.scale.get_height());
-
-        // Clean up
-        X.globalAlpha = 1;
-
-    }
-}
-
-class Button extends Pane {
-    constructor({ name, text, colour, x, y, scale, alignment, parent }) {
-
-        super({ name, colour, x, y, scale, alignment, parent });
-
-        this.text = text ?? 'Button';
-        this.type = 'button';
-
-        Context.on(this.name + '.text', (text) => this.text = text);
-
-    }
-
-    draw() {
-        const [colour, shade, transparency] = this.colour.split('.');
-
-        let position = alignment(this.alignment, this.x, this.y, this.scale, this.calc_parent());
-        let x = position.x, y = position.y;
-
-        X.fillStyle = Colours[colour][shade];
-        if (transparency) X.globalAlpha = transparency / 100;
-
-        X.fillRect(x, y, this.scale.get_width(), this.scale.get_height());
-        X.globalAlpha = 1;
-
-        X.fillStyle = '#ffffff';
-        X.font = '30px Arial';
-        X.textAlign = 'center';
-        X.textBaseline = 'middle';
-
-        X.fillText(this.text, x + this.scale.get_width() / 2, y + this.scale.get_height() / 2);
-
-    }
-
-}
-
-const Parts = {
-    "Pane": Pane,
-    "Button": Button
 }
